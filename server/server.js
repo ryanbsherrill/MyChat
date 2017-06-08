@@ -11,19 +11,23 @@ let io = socketIO(server);
 
 app.use(express.static(publicPath));
 
+// listening for client connection
 io.on('connection', (socket) => {
   console.log('CLIENT CONNECTED');
 
-  socket.emit('newMessage', {
-    from: 'John',
-    text: 'Hey bro.',
-    createdAt: 123123,
-  });
-
+  // listening for createMessage event
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
+
+    // emitting recieved message
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime(),
+    });
   });
 
+  // listening for client disconnection
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED');
   });
