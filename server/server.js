@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+const {generateMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 let app = express();
@@ -11,39 +12,27 @@ let io = socketIO(server);
 
 app.use(express.static(publicPath));
 
-// LISTENING FOR CLIENT CONNECTION
+// LISTEN FOR CLIENT CONNECTION
 io.on('connection', (socket) => {
-  console.log('CLIENT CONNECTED');
+  console.log('Client Connected');
 
   // ADMIN: WELCOME MESSAGE
-  socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome to the chat app!',
-    createdAt: new Date().getTime(),
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome!'));
 
   // ADMIN: NEW USER MESSAGE
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'A new user has joined',
-    createdAt: new Date().getTime(),
-  });
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-  // LISTENING FOR 'createMessage' EVENT
+  // LISTEN FOR 'createMessage' EVENT
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
 
-    // EMITTING RECIEVED MESSAGE
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime(),
-    });
+    // EMIT RECIEVED MESSAGE
+    io.emit('newMessage', generateMessage(message.from, message.text));
   });
 
-  // LISTENING FOR CLIENT DISCONNECT
+  // LISTEN FOR CLIENT DISCONNECT
   socket.on('disconnect', () => {
-    console.log('CLIENT DISCONNECTED');
+    console.log('Client Disconnected');
   });
 });
 
