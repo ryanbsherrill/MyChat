@@ -11,15 +11,29 @@ let io = socketIO(server);
 
 app.use(express.static(publicPath));
 
-// listening for client connection
+// LISTENING FOR CLIENT CONNECTION
 io.on('connection', (socket) => {
   console.log('CLIENT CONNECTED');
 
-  // listening for createMessage event
+  // ADMIN: WELCOME MESSAGE
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app!',
+    createdAt: new Date().getTime(),
+  });
+
+  // ADMIN: NEW USER MESSAGE
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'A new user has joined',
+    createdAt: new Date().getTime(),
+  });
+
+  // LISTENING FOR 'createMessage' EVENT
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
 
-    // emitting recieved message
+    // EMITTING RECIEVED MESSAGE
     io.emit('newMessage', {
       from: message.from,
       text: message.text,
@@ -27,7 +41,7 @@ io.on('connection', (socket) => {
     });
   });
 
-  // listening for client disconnection
+  // LISTENING FOR CLIENT DISCONNECT
   socket.on('disconnect', () => {
     console.log('CLIENT DISCONNECTED');
   });

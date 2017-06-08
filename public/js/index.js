@@ -1,16 +1,16 @@
 const socket = io();
 
-// listening for server connection
+// LISTENING FOR SERVER CONNECTION
 socket.on('connect', function () {
   console.log('SERVER CONNECTED');
 });
 
-// listening for new message
+// LISTENING FOR 'newMessage' EVENT
 socket.on('newMessage', function (message) {
   console.log('newMessage', message);
 });
 
-// listening for server disconnect
+// LISTENING FOR SERVER DISCONNECT
 socket.on('disconnect', function () {
   console.log('SERVER DISCONNECTED');
 });
