@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
 
     // EMIT RECIEVED MESSAGE
     io.emit('newMessage', generateMessage(message.from, message.text));
-    callback('This is from the server');
+    callback();
   });
 
   // SEND 'newLocationMessage' TO DOM

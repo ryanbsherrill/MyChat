@@ -40,31 +40,36 @@ socket.on('newLocationMessage', function (message) {
 jQuery('#message-form').on('submit', function (e) {
   e.preventDefault();
 
+const messageTextbox = jQuery('[name=message]');
+
   // SEND MESSAGE
   socket.emit('createMessage', {
     from: 'User',
-    text: jQuery('[name=message]').val(),
+    text: messageTextbox.val(),
   }, function () {
-
+    messageTextbox.val('');
   });
 });
 
 // GEOLOCATION BUTTON
-const locationButton = jQuery('#share-location');
+const locationButton = jQuery('#send-location');
 
-// LISTEN FOR '#share-location' CLICK
+// LISTEN FOR '#send-location' CLICK
 locationButton.on('click', function () {
   if (!navigator.geolocation) {
     return $.notify('Geolocation not supported by your browser');
   }
 
+  locationButton.attr('disabled', 'disabled').text('Sending Location...');
   // GET AND EMIT LOCATION
   navigator.geolocation.getCurrentPosition(function (position) {
+    locationButton.removeAttr('disabled').text('Send Location');;
     socket.emit('createLocatonMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
     });
   }, function () {
+    locationButton.removeAttr('disabled').text('Send Location');
     $.notify('Unable to get location');
   });
 });
